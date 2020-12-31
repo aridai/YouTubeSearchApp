@@ -10,9 +10,8 @@ function parseFormattedFilePath(line: string): string | null {
 const dartFormatReport = readFileSync('dart_format_report.txt', 'utf-8');
 const formattedFilePaths = dartFormatReport.split('\n').map(parseFormattedFilePath).filter(path => path != null);
 
-markdown('## Dart Format Report\n');
-
 if (formattedFilePaths.length != 0) {
+    markdown('## Dart Format Report\n');
     markdown(`${formattedFilePaths.length} issue(s) found.\n`);
     for (var path of formattedFilePaths) markdown(`* ${path}`);
 
@@ -32,11 +31,10 @@ function parseIssueLine(line: string): Issue | null {
 const report = readFileSync('flutter_analyze_report.txt', 'utf-8');
 const issues = report.split('\n').map(parseIssueLine).filter(issue => issue != null);
 
-markdown('## Flutter Analyzer Report\n');
-
 if (issues.length != 0) {
-    var table = '| Level | Message | File | Rule |\n|:---|:---|:---|:---|\n';
+    markdown('## Flutter Analyzer Report\n');
 
+    var table = '| Level | Message | File | Rule |\n|:---|:---|:---|:---|\n';
     for (var issue of issues) {
         const ruleLink = `[${issue.rule}](https://dart-lang.github.io/linter/lints/${issue.rule}.html)`;
         table += `| ${issue.level} | ${issue.message} | ${issue.file} | ${ruleLink} |\n`;
