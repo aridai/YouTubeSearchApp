@@ -32,6 +32,9 @@ jobs:
           channel: 'beta'
           flutter-version: '1.25.0-8.1.pre'
 
+      - name: Enable Flutter for Web
+        run: flutter config --enable-web
+
       - name: Check Flutter version
         run: flutter --version
 
