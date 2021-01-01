@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:youtube_search_app/video.dart';
 
 //  検索ページのリストの動画の要素
 class VideoView extends StatelessWidget {
@@ -7,8 +9,11 @@ class VideoView extends StatelessWidget {
   //  サムネイル画像のアスペクト比
   static const _thumbnailAspectRatio = 320.0 / 180.0;
 
+  //  日時のフォーマット
+  static final _formatter = DateFormat('yyyy/MM/dd HH:mm');
+
   final int index;
-  final Object model;
+  final Video model;
 
   @override
   Widget build(BuildContext context) => Padding(
@@ -41,7 +46,7 @@ class VideoView extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: _thumbnailAspectRatio,
             child: Image.network(
-              'https://placehold.jp/26/000000/FFFFFF/320x180.png?text=THUMBNAIL',
+              this.model.thumbnailUrl,
               fit: BoxFit.fill,
               isAntiAlias: true,
             ),
@@ -50,21 +55,30 @@ class VideoView extends StatelessWidget {
       );
 
   //  動画のタイトルを生成する。
-  Widget _buildVideoTitle() => const Padding(
-        padding: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
-        child: Text('動画タイトル', style: TextStyle(color: Colors.black)),
+  Widget _buildVideoTitle() => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+        child: Text(
+          this.model.title,
+          style: const TextStyle(color: Colors.black),
+        ),
       );
 
   //  チャンネル名を生成する。
-  Widget _buildChannelTitle() => const Padding(
-        padding: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
-        child: Text('チャンネル名', style: TextStyle(color: Colors.black87)),
+  Widget _buildChannelTitle() => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+        child: Text(
+          this.model.channelTitle,
+          style: const TextStyle(color: Colors.black87),
+        ),
       );
 
   //  動画の投稿日時を生成する。
-  Widget _buildUploadedAt() => const Padding(
-        padding: EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
-        child: Text('投稿日時', style: TextStyle(color: Colors.black87)),
+  Widget _buildUploadedAt() => Padding(
+        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+        child: Text(
+          _formatter.format(this.model.uploadedAt),
+          style: const TextStyle(color: Colors.black87),
+        ),
       );
 
   //  この動画要素がタップされたとき。
