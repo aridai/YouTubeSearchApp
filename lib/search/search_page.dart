@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/search/search_page_drawer.dart';
+import 'package:youtube_search_app/search/search_page_list.dart';
 
 //  検索ページ
 class SearchPage extends StatelessWidget {
@@ -53,7 +56,9 @@ class _SearchPageContent extends StatelessWidget {
 
   //  ボディを生成する。
   Widget _buildBody(BuildContext context) => GestureDetector(
-        child: this._buildGuideMessage(),
+        //  本来はリストの有無によって分岐するが、現段階では仮にこうしておく。
+        child:
+            Random().nextBool() ? SearchPageList() : this._buildGuideMessage(),
         onTap: () => this._dismissKeyboard(context),
       );
 
