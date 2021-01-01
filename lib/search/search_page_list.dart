@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youtube_search_app/dummy_video.dart';
 import 'package:youtube_search_app/search/trail_progress_view.dart';
 import 'package:youtube_search_app/search/video_view.dart';
 
@@ -24,7 +25,7 @@ class SearchPageList extends StatelessWidget {
 
   //  リスト要素を生成する。
   Widget _buildListElement(BuildContext context, int index) =>
-      index != 29 ? VideoView(index, null) : TrailProgressView();
+      index != 29 ? VideoView(index, DummyVideo()) : TrailProgressView();
 
   //  スワイプ更新が掛けられたとき。
   Future<void> _onRefresh() async {
