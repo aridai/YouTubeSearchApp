@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.1
   rxdart: ^0.25.0
   provider: ^4.3.2+3
+  visibility_detector: ^0.1.5
 
 dev_dependencies:
   flutter_test:
