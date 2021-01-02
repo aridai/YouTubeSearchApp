@@ -33,6 +33,9 @@ class SearchPageBloc {
   //  (リスト末尾まで到達した際の追加取得が行われている状態)
   final _isFetchingAdditionally = BehaviorSubject.seeded(false);
 
+  //  直近のエラーを通知するSubject
+  final _errorSubject = PublishSubject<FetchErrorType>();
+
   //  ビジー状態 (通信状態) かどうか
   //  (3通りの更新処理のうち、いずれかが行われているかどうか)
   Stream<bool> get _isBusy => Rx.combineLatest3<bool, bool, bool, bool>(
@@ -58,6 +61,9 @@ class SearchPageBloc {
   //  取得中のProgressIndicatorを配置してもよいかどうか
   Stream<bool> get isProgressIndicatorVisible => this._isFetching.stream;
 
+  //  エラーを通知するStream
+  Stream<FetchErrorType> get errorStream => this._errorSubject.stream;
+
   //  終了処理を行う。
   void dispose() {
     this._keyword.close();
@@ -66,6 +72,7 @@ class SearchPageBloc {
     this._isFetching.close();
     this._isSwipeRefreshing.close();
     this._isFetchingAdditionally.close();
+    this._errorSubject.close();
   }
 
   //  検索を行う。
@@ -157,9 +164,8 @@ class SearchPageBloc {
 
   //  動画リストの取得に失敗したとき。
   void _onFetchFailure(FetchErrorType cause, {bool clearListOnError = true}) {
-    //  TODO: エラー通知系Streamの発火
-
     if (clearListOnError) this._videoList.add(List.empty());
     this._isAppendable.add(false);
+    this._errorSubject.add(cause);
   }
 }
