@@ -5,6 +5,9 @@ import 'package:youtube_search_app/video.dart';
 
 //  検索ページのBLoC
 class SearchPageBloc {
+  //  検索キーワード
+  final _keyword = BehaviorSubject.seeded('');
+
   //  動画リスト
   final _videoList = BehaviorSubject<List<Video>>.seeded(List.empty());
 
@@ -31,6 +34,12 @@ class SearchPageBloc {
         this._isFetchingAdditionally,
         (fetch, swipe, add) => fetch || swipe || add,
       );
+
+  //  検索キーワードのStream
+  Stream<String> get keyword => this._keyword.stream;
+
+  //  検索キーワードのSink
+  Sink<String> get keywordSink => this._keyword.sink;
 
   //  検索ページリスト
   Stream<List<ListElement>> get list => Rx.combineLatest2(
