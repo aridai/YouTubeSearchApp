@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:youtube_search_app/dependency.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/search/search_page_drawer.dart';
 import 'package:youtube_search_app/search/search_keyword_field.dart';
@@ -9,7 +10,7 @@ import 'package:youtube_search_app/search/search_page_list.dart';
 class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Provider<SearchPageBloc>(
-        create: (context) => SearchPageBloc(),
+        create: (context) => Dependency.resolve(),
         dispose: (context, bloc) => bloc.dispose(),
         child: _SearchPageContent(),
       );

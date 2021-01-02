@@ -1,10 +1,17 @@
 import 'package:rxdart/rxdart.dart';
-import 'package:youtube_search_app/dummy_video.dart';
 import 'package:youtube_search_app/search/list_element.dart';
+import 'package:youtube_search_app/search/usecase/append/video_list_append_use_case.dart';
+import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
 import 'package:youtube_search_app/video.dart';
 
 //  検索ページのBLoC
 class SearchPageBloc {
+  SearchPageBloc(this._videoListFetchUseCase, this._videoListAppendUseCase);
+
+  final VideoListFetchUseCase _videoListFetchUseCase;
+  final VideoListAppendUseCase _videoListAppendUseCase;
+
   //  検索キーワード
   final _keyword = BehaviorSubject.seeded('');
 
@@ -65,14 +72,20 @@ class SearchPageBloc {
     //  すでに他の通信処理が始まっている場合は新規に処理は走らせない。
     if (await this._isBusy.first) return;
 
-    print('検索開始');
     this._isFetching.add(true);
 
-    await this._dummyDelayForDebug();
-    this._updateListForDebug(5, isAppendable: true);
+    final request = VideoListFetchRequest(this._keyword.value, null);
+    final response = await this._videoListFetchUseCase.execute(request);
+
+    //  成功時
+    if (response is VideoListFetchResponseSuccess)
+      this._onFetchSuccess(response.videoList, response.hasNextPage);
+
+    //  失敗時
+    if (response is VideoListFetchResponseFailure)
+      this._onFetchFailure(response.cause, clearListOnError: true);
 
     this._isFetching.add(false);
-    print('検索終了');
   }
 
   //  スワイプ更新を行う。
@@ -80,14 +93,20 @@ class SearchPageBloc {
     //  すでに他の通信処理が始まっている場合は新規に処理は走らせない。
     if (await this._isBusy.first) return;
 
-    print('スワイプ更新開始');
     this._isSwipeRefreshing.add(true);
 
-    await this._dummyDelayForDebug();
-    this._updateListForDebug(5, isAppendable: true);
+    final request = VideoListFetchRequest(this._keyword.value, null);
+    final response = await this._videoListFetchUseCase.execute(request);
+
+    //  成功時
+    if (response is VideoListFetchResponseSuccess)
+      this._onFetchSuccess(response.videoList, response.hasNextPage);
+
+    //  失敗時
+    if (response is VideoListFetchResponseFailure)
+      this._onFetchFailure(response.cause, clearListOnError: false);
 
     this._isSwipeRefreshing.add(false);
-    print('スワイプ更新終了');
   }
 
   //  追加取得を行う。
@@ -95,15 +114,20 @@ class SearchPageBloc {
     //  すでに他の通信処理が始まっている場合は新規に処理は走らせない。
     if (await this._isBusy.first) return;
 
-    print('追加取得開始');
     this._isFetchingAdditionally.add(true);
 
-    await this._dummyDelayForDebug();
-    final destSize = this._videoList.value.length + 5;
-    this._updateListForDebug(destSize, isAppendable: destSize < 20);
+    final request = VideoListAppendRequest();
+    final response = await this._videoListAppendUseCase.execute(request);
+
+    //  成功時
+    if (response is VideoListAppendResponseSuccess)
+      this._onFetchSuccess(response.videoList, response.hasNextPage);
+
+    //  失敗時
+    if (response is VideoListAppendResponseFailure)
+      this._onFetchFailure(response.cause, clearListOnError: false);
 
     this._isFetchingAdditionally.add(false);
-    print('追加取得終了');
   }
 
   //  動画リストを検索ページで表示させるためのリストに変換する。
@@ -124,15 +148,17 @@ class SearchPageBloc {
     }
   }
 
-  //  ダミーの遅延を掛ける。
-  //  (デバッグ用)
-  Future<void> _dummyDelayForDebug() =>
-      Future.delayed(const Duration(seconds: 3));
+  //  動画リストの取得に成功したとき。
+  void _onFetchSuccess(List<Video> newVideoList, bool hasNextPage) {
+    this._videoList.add(newVideoList);
+    this._isAppendable.add(hasNextPage);
+  }
 
-  //  要素数を指定してリストを更新する。
-  //  (デバッグ用)
-  void _updateListForDebug(int size, {bool isAppendable = true}) {
-    this._isAppendable.add(isAppendable);
-    this._videoList.add(List.generate(size, (index) => DummyVideo()));
+  //  動画リストの取得に失敗したとき。
+  void _onFetchFailure(FetchErrorType cause, {bool clearListOnError = true}) {
+    //  TODO: エラー通知系Streamの発火
+
+    if (clearListOnError) this._videoList.add(List.empty());
+    this._isAppendable.add(false);
   }
 }
