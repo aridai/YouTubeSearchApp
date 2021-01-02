@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/search/search_page_drawer.dart';
+import 'package:youtube_search_app/search/search_keyword_field.dart';
 import 'package:youtube_search_app/search/search_page_list.dart';
 
 //  検索ページ
@@ -16,40 +17,21 @@ class SearchPage extends StatelessWidget {
 
 //  検索ページのコンテンツ
 class _SearchPageContent extends StatelessWidget {
-  final _controller = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<SearchPageBloc>(context);
 
     return Scaffold(
-      appBar: this._buildAppBar(context, bloc),
+      appBar: this._buildAppBar(),
       drawer: SearchPageDrawer(),
       body: this._buildBody(context, bloc),
     );
   }
 
   //  アプリバーを生成する。
-  PreferredSizeWidget _buildAppBar(BuildContext context, SearchPageBloc bloc) =>
-      AppBar(
-        title: this._buildKeywordField(context, bloc),
+  PreferredSizeWidget _buildAppBar() => AppBar(
+        title: SearchKeywordField(),
         actions: [this._buildFilterIcon()],
-      );
-
-  //  キーワードフィールドを生成する。
-  Widget _buildKeywordField(BuildContext context, SearchPageBloc bloc) =>
-      TextField(
-        controller: this._controller,
-        keyboardType: TextInputType.text,
-        textInputAction: TextInputAction.search,
-        style: const TextStyle(color: Colors.white),
-        cursorColor: Colors.white,
-        decoration: const InputDecoration(
-          border: InputBorder.none,
-          hintText: '検索キーワード',
-          hintStyle: TextStyle(color: Colors.white),
-        ),
-        onEditingComplete: () => this._onKeywordEditingCompleted(context, bloc),
       );
 
   //  フィルタアイコンを生成する。
@@ -104,13 +86,6 @@ class _SearchPageContent extends StatelessWidget {
 
   //  フィルタアイコンが押されたとき。
   void _onFilterIconPressed() {}
-
-  //  キーワードの編集が完了したとき。
-  Future<void> _onKeywordEditingCompleted(
-      BuildContext context, SearchPageBloc bloc) async {
-    this._dismissKeyboard(context);
-    await bloc.search();
-  }
 
   //  キーボードを非表示にする。
   void _dismissKeyboard(BuildContext context) {
