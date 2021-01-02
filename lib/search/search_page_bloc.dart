@@ -53,6 +53,7 @@ class SearchPageBloc {
 
   //  終了処理を行う。
   void dispose() {
+    this._keyword.close();
     this._videoList.close();
     this._isAppendable.close();
     this._isFetching.close();
