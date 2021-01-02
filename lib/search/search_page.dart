@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
@@ -21,20 +19,26 @@ class _SearchPageContent extends StatelessWidget {
   final _controller = TextEditingController();
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: this._buildAppBar(context),
-        drawer: SearchPageDrawer(),
-        body: this._buildBody(context),
-      );
+  Widget build(BuildContext context) {
+    final bloc = Provider.of<SearchPageBloc>(context);
+
+    return Scaffold(
+      appBar: this._buildAppBar(context, bloc),
+      drawer: SearchPageDrawer(),
+      body: this._buildBody(context, bloc),
+    );
+  }
 
   //  アプリバーを生成する。
-  PreferredSizeWidget _buildAppBar(BuildContext context) => AppBar(
-        title: this._buildKeywordField(context),
+  PreferredSizeWidget _buildAppBar(BuildContext context, SearchPageBloc bloc) =>
+      AppBar(
+        title: this._buildKeywordField(context, bloc),
         actions: [this._buildFilterIcon()],
       );
 
   //  キーワードフィールドを生成する。
-  Widget _buildKeywordField(BuildContext context) => TextField(
+  Widget _buildKeywordField(BuildContext context, SearchPageBloc bloc) =>
+      TextField(
         controller: this._controller,
         keyboardType: TextInputType.text,
         textInputAction: TextInputAction.search,
@@ -45,7 +49,7 @@ class _SearchPageContent extends StatelessWidget {
           hintText: '検索キーワード',
           hintStyle: TextStyle(color: Colors.white),
         ),
-        onEditingComplete: () => this._onKeywordEditingCompleted(context),
+        onEditingComplete: () => this._onKeywordEditingCompleted(context, bloc),
       );
 
   //  フィルタアイコンを生成する。
@@ -55,11 +59,36 @@ class _SearchPageContent extends StatelessWidget {
       );
 
   //  ボディを生成する。
-  Widget _buildBody(BuildContext context) => GestureDetector(
-        //  本来はリストの有無によって分岐するが、現段階では仮にこうしておく。
-        child:
-            Random().nextBool() ? SearchPageList() : this._buildGuideMessage(),
+  Widget _buildBody(BuildContext context, SearchPageBloc bloc) =>
+      GestureDetector(
+        child: this._buildRefreshIndicator(bloc),
         onTap: () => this._dismissKeyboard(context),
+      );
+
+  //  RefreshIndicatorを生成する。
+  Widget _buildRefreshIndicator(SearchPageBloc bloc) => StreamBuilder<bool>(
+        initialData: false,
+        stream: bloc.isProgressIndicatorVisible,
+        builder: (context, snapshot) {
+          final isRefreshing = snapshot.data;
+
+          if (isRefreshing) {
+            return this._buildProgressIndicator();
+          } else {
+            return this._buildSearchPageList(bloc);
+          }
+        },
+      );
+
+  //  検索ページのリストを生成する。
+  Widget _buildSearchPageList(SearchPageBloc bloc) => StreamBuilder<bool>(
+        initialData: false,
+        stream: bloc.isNotEmpty,
+        builder: (context, snapshot) {
+          final isNotEmpty = snapshot.data;
+
+          return isNotEmpty ? SearchPageList() : this._buildGuideMessage();
+        },
       );
 
   //  ガイドメッセージを生成する。
@@ -69,12 +98,18 @@ class _SearchPageContent extends StatelessWidget {
         child: const Center(child: Text('検索キーワードを入力してください。')),
       );
 
+  //  ProgressIndicatorを生成する。
+  Widget _buildProgressIndicator() =>
+      const Center(child: CircularProgressIndicator());
+
   //  フィルタアイコンが押されたとき。
   void _onFilterIconPressed() {}
 
   //  キーワードの編集が完了したとき。
-  void _onKeywordEditingCompleted(BuildContext context) {
+  Future<void> _onKeywordEditingCompleted(
+      BuildContext context, SearchPageBloc bloc) async {
     this._dismissKeyboard(context);
+    await bloc.search();
   }
 
   //  キーボードを非表示にする。
