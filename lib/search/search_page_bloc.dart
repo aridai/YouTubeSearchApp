@@ -132,8 +132,11 @@ class SearchPageBloc {
       this._onFetchSuccess(response.videoList, response.hasNextPage);
 
     //  失敗時
-    if (response is VideoListAppendResponseFailure)
+    if (response is VideoListAppendResponseFailure) {
+      //  UIがややこしくなるため、追加取得失敗のリトライはできないようにする。
+      this._isAppendable.add(false);
       this._onFetchFailure(response.cause, clearListOnError: false);
+    }
 
     this._isFetchingAdditionally.add(false);
   }
@@ -164,8 +167,10 @@ class SearchPageBloc {
 
   //  動画リストの取得に失敗したとき。
   void _onFetchFailure(FetchErrorType cause, {bool clearListOnError = true}) {
-    if (clearListOnError) this._videoList.add(List.empty());
-    this._isAppendable.add(false);
+    if (clearListOnError) {
+      this._videoList.add(List.empty());
+      this._isAppendable.add(false);
+    }
     this._errorSubject.add(cause);
   }
 }
