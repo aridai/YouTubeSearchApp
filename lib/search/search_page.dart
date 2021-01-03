@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:youtube_search_app/dependency.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/search/search_page_drawer.dart';
 import 'package:youtube_search_app/search/search_keyword_field.dart';
 import 'package:youtube_search_app/search/search_page_list.dart';
+import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
 
 //  検索ページ
 class SearchPage extends StatelessWidget {
@@ -17,7 +19,22 @@ class SearchPage extends StatelessWidget {
 }
 
 //  検索ページのコンテンツ
-class _SearchPageContent extends StatelessWidget {
+class _SearchPageContent extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _SearchPageContentState();
+}
+
+class _SearchPageContentState extends State<_SearchPageContent> {
+  final _compositeSubscription = CompositeSubscription();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final bloc = Provider.of<SearchPageBloc>(context);
+    bloc.errorStream.listen(this._onError).addTo(this._compositeSubscription);
+  }
+
   @override
   Widget build(BuildContext context) {
     final bloc = Provider.of<SearchPageBloc>(context);
@@ -27,6 +44,12 @@ class _SearchPageContent extends StatelessWidget {
       drawer: SearchPageDrawer(),
       body: this._buildBody(context, bloc),
     );
+  }
+
+  @override
+  void dispose() {
+    this._compositeSubscription.dispose();
+    super.dispose();
   }
 
   //  アプリバーを生成する。
@@ -94,5 +117,24 @@ class _SearchPageContent extends StatelessWidget {
     if (!currentScope.hasPrimaryFocus && currentScope.hasFocus) {
       FocusManager.instance.primaryFocus.unfocus();
     }
+  }
+
+  //  エラーが発生したとき。
+  void _onError(FetchErrorType error) {
+    String message;
+    switch (error) {
+      case FetchErrorType.TokenError:
+        message = '時間をおいてからリトライしてください。';
+        break;
+      case FetchErrorType.ClientError:
+        message = 'インターネット環境を確認してリトライしてください。';
+        break;
+      case FetchErrorType.UnknownError:
+        message = 'エラーが発生しました。時間をおいてからリトライしてください。';
+        break;
+    }
+
+    final snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(this.context).showSnackBar(snackBar);
   }
 }
