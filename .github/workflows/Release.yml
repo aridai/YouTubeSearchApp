@@ -23,8 +23,14 @@ jobs:
       - name: Check Flutter version
         run: flutter --version
 
+      - name: Restore dotenv
+        run: echo ${{ secrets.DOT_ENV }} | base64 -d > .env
+
       - name: Restore dependencies
         run: flutter pub get
+
+      - name: Run build_runner
+        run: flutter pub run build_runner build
 
       - name: Build (Web)
         run: flutter build web
