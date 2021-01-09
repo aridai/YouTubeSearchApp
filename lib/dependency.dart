@@ -1,11 +1,12 @@
 import 'package:get_it/get_it.dart';
 import 'package:youtube_search_app/env/env.dart';
+import 'package:youtube_search_app/search/repository/search_repository.dart';
+import 'package:youtube_search_app/search/repository/search_repository_impl.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
-import 'package:youtube_search_app/search/usecase/append/stub_video_list_append_interactor.dart';
+import 'package:youtube_search_app/search/usecase/append/video_list_append_interactor.dart';
 import 'package:youtube_search_app/search/usecase/append/video_list_append_use_case.dart';
-import 'package:youtube_search_app/search/usecase/fetch/stub_video_list_fetch_interactor.dart';
+import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_interactor.dart';
 import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_use_case.dart';
-import 'package:youtube_search_app/search/usecase/stub_repository.dart';
 
 //  DIコンテナのラッパ
 class Dependency {
@@ -16,13 +17,15 @@ class Dependency {
       instanceName: 'YOUTUBE_API_KEY',
     );
 
-    GetIt.I.registerLazySingleton(() => StubRepository());
+    GetIt.I.registerLazySingleton<SearchRepository>(
+      () => SearchRepositoryImpl(),
+    );
 
     GetIt.I.registerFactory<VideoListFetchUseCase>(
-      () => StubVideoListFetchInteractor(resolve()),
+      () => VideoListFetchInteractor(resolve()),
     );
     GetIt.I.registerFactory<VideoListAppendUseCase>(
-      () => StubVideoListAppendInteractor(resolve()),
+      () => VideoListAppendInteractor(resolve()),
     );
 
     GetIt.I.registerFactory<SearchPageBloc>(
