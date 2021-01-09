@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:youtube_search_app/env/env.dart';
 import 'package:youtube_search_app/search/repository/search_repository.dart';
 import 'package:youtube_search_app/search/repository/search_repository_impl.dart';
+import 'package:youtube_search_app/search/repository/youtube_api_service.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/search/usecase/append/video_list_append_interactor.dart';
 import 'package:youtube_search_app/search/usecase/append/video_list_append_use_case.dart';
@@ -17,8 +19,11 @@ class Dependency {
       instanceName: 'YOUTUBE_API_KEY',
     );
 
+    GetIt.I.registerLazySingleton<YouTubeApiService>(
+      () => YouTubeApiService(Dio()),
+    );
     GetIt.I.registerLazySingleton<SearchRepository>(
-      () => SearchRepositoryImpl(),
+      () => SearchRepositoryImpl(resolve(), resolve(name: 'YOUTUBE_API_KEY')),
     );
 
     GetIt.I.registerFactory<VideoListFetchUseCase>(
