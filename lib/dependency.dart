@@ -9,6 +9,8 @@ import 'package:youtube_search_app/search/usecase/append/video_list_append_inter
 import 'package:youtube_search_app/search/usecase/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_interactor.dart';
 import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/search/usecase/history/save/stub_watch_history_save_interactor.dart';
+import 'package:youtube_search_app/search/usecase/history/save/watch_history_save_use_case.dart';
 
 //  DIコンテナのラッパ
 class Dependency {
@@ -32,9 +34,12 @@ class Dependency {
     GetIt.I.registerFactory<VideoListAppendUseCase>(
       () => VideoListAppendInteractor(resolve()),
     );
+    GetIt.I.registerFactory<WatchHistorySaveUseCase>(
+      () => StubWatchHistorySaveInteractor(),
+    );
 
     GetIt.I.registerFactory<SearchPageBloc>(
-      () => SearchPageBloc(resolve(), resolve()),
+      () => SearchPageBloc(resolve(), resolve(), resolve()),
     );
   }
 

@@ -7,6 +7,7 @@ import 'package:youtube_search_app/search/search_page_drawer.dart';
 import 'package:youtube_search_app/search/search_keyword_field.dart';
 import 'package:youtube_search_app/search/search_page_list.dart';
 import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
+import 'package:youtube_search_app/youtube_app_launcher.dart';
 
 //  検索ページ
 class SearchPage extends StatelessWidget {
@@ -32,7 +33,11 @@ class _SearchPageContentState extends State<_SearchPageContent> {
     super.didChangeDependencies();
 
     final bloc = Provider.of<SearchPageBloc>(context);
+
     bloc.errorStream.listen(this._onError).addTo(this._compositeSubscription);
+    bloc.videoIdToWatchStream
+        .listen(this._launchYouTubeApp)
+        .addTo(this._compositeSubscription);
   }
 
   @override
@@ -136,5 +141,10 @@ class _SearchPageContentState extends State<_SearchPageContent> {
 
     final snackBar = SnackBar(content: Text(message));
     ScaffoldMessenger.of(this.context).showSnackBar(snackBar);
+  }
+
+  //  YouTubeアプリを開いて動画の視聴を開始する。
+  Future<void> _launchYouTubeApp(String videoId) async {
+    await YouTubeAppLauncher.instance.launchYouTubeApp(videoId);
   }
 }

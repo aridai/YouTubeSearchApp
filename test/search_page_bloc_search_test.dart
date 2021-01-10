@@ -15,8 +15,13 @@ void main() {
   group('SearchPageBlocのテスト', () {
     final mockFetchUseCase = MockVideoListFetchUseCase();
     final mockAppendUseCase = MockVideoListAppendUseCase();
+    final mockHistoryUseCase = MockWatchHistorySaveUseCase();
 
-    final bloc = SearchPageBloc(mockFetchUseCase, mockAppendUseCase);
+    final bloc = SearchPageBloc(
+      mockFetchUseCase,
+      mockAppendUseCase,
+      mockHistoryUseCase,
+    );
 
     group('検索のテスト', () {
       test('成功するケース', () async {

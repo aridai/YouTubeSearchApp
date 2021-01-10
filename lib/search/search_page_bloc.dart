@@ -3,14 +3,20 @@ import 'package:youtube_search_app/search/list_element.dart';
 import 'package:youtube_search_app/search/usecase/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_use_case.dart';
 import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
+import 'package:youtube_search_app/search/usecase/history/save/watch_history_save_use_case.dart';
 import 'package:youtube_search_app/video.dart';
 
 //  検索ページのBLoC
 class SearchPageBloc {
-  SearchPageBloc(this._videoListFetchUseCase, this._videoListAppendUseCase);
+  SearchPageBloc(
+    this._videoListFetchUseCase,
+    this._videoListAppendUseCase,
+    this._watchHistorySaveUseCase,
+  );
 
   final VideoListFetchUseCase _videoListFetchUseCase;
   final VideoListAppendUseCase _videoListAppendUseCase;
+  final WatchHistorySaveUseCase _watchHistorySaveUseCase;
 
   //  検索キーワード
   final _keyword = BehaviorSubject.seeded('');
@@ -35,6 +41,12 @@ class SearchPageBloc {
 
   //  直近のエラーを通知するSubject
   final _errorSubject = PublishSubject<FetchErrorType>();
+
+  //  視聴履歴の保存処理を実行中かどうか。
+  final _isSavingWatchHistory = BehaviorSubject.seeded(false);
+
+  //  動画を開くイベントを通知するSubject
+  final _videoOpenEventSubject = PublishSubject<String>();
 
   //  ビジー状態 (通信状態) かどうか
   //  (3通りの更新処理のうち、いずれかが行われているかどうか)
@@ -64,6 +76,9 @@ class SearchPageBloc {
   //  エラーを通知するStream
   Stream<FetchErrorType> get errorStream => this._errorSubject.stream;
 
+  //  視聴を開始する動画IDを通知するStream
+  Stream<String> get videoIdToWatchStream => this._videoOpenEventSubject;
+
   //  終了処理を行う。
   void dispose() {
     this._keyword.close();
@@ -73,6 +88,8 @@ class SearchPageBloc {
     this._isSwipeRefreshing.close();
     this._isFetchingAdditionally.close();
     this._errorSubject.close();
+    this._isSavingWatchHistory.close();
+    this._videoOpenEventSubject.close();
   }
 
   //  検索を行う。
@@ -139,6 +156,21 @@ class SearchPageBloc {
     }
 
     this._isFetchingAdditionally.add(false);
+  }
+
+  //  動画がクリックされたとき。
+  Future<void> onVideoClicked(Video video) async {
+    //  すでに他の視聴履歴の保存処理が始まっている場合は新規に処理は走らせない。
+    if (await this._isSavingWatchHistory.first) return;
+
+    this._isSavingWatchHistory.add(true);
+
+    //  視聴履歴を保存する。
+    await this._watchHistorySaveUseCase.execute(WatchHistorySaveRequest(video));
+
+    this._videoOpenEventSubject.add(video.videoId);
+
+    this._isSavingWatchHistory.add(false);
   }
 
   //  動画リストを検索ページで表示させるためのリストに変換する。
