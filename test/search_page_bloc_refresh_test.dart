@@ -14,8 +14,13 @@ void main() {
   group('SearchPageBlocのテスト', () {
     final mockFetchUseCase = MockVideoListFetchUseCase();
     final mockAppendUseCase = MockVideoListAppendUseCase();
+    final mockHistoryUseCase = MockWatchHistorySaveUseCase();
 
-    final bloc = SearchPageBloc(mockFetchUseCase, mockAppendUseCase);
+    final bloc = SearchPageBloc(
+      mockFetchUseCase,
+      mockAppendUseCase,
+      mockHistoryUseCase,
+    );
     const keyword = '検索キーワードてすと';
 
     group('スワイプ更新のテスト', () {
