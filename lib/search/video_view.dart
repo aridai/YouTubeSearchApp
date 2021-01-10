@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/video.dart';
 
 //  検索ページのリストの動画の要素
@@ -16,17 +18,21 @@ class VideoView extends StatelessWidget {
   final Video model;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.fromLTRB(8.0, 0.0, 16.0, 8.0),
-        child: Card(
-          elevation: 3.0,
-          child: InkWell(
-            child: this._buildCardContents(),
-            onTap: () => this._onTap(),
-            onLongPress: () => this._onLongPress(),
-          ),
+  Widget build(BuildContext context) {
+    final bloc = Provider.of<SearchPageBloc>(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8.0, 0.0, 16.0, 8.0),
+      child: Card(
+        elevation: 3.0,
+        child: InkWell(
+          child: this._buildCardContents(),
+          onTap: () => this._onTap(bloc),
+          onLongPress: () => this._onLongPress(),
         ),
-      );
+      ),
+    );
+  }
 
   //  Card内のコンテンツを生成する。
   Widget _buildCardContents() => Column(
@@ -82,7 +88,9 @@ class VideoView extends StatelessWidget {
       );
 
   //  この動画要素がタップされたとき。
-  void _onTap() {}
+  Future<void> _onTap(SearchPageBloc bloc) async {
+    await bloc.onVideoClicked(this.model);
+  }
 
   //  この動画要素が長押しされたとき。
   void _onLongPress() {}
