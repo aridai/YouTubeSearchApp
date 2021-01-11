@@ -36,7 +36,8 @@ void main() {
         //  という結果を返すように設定する。
         final videoList = List.generate(8, (_) => DummyVideo());
         const hasNextPage = true;
-        final response = VideoListAppendResponseSuccess(videoList, hasNextPage);
+        final response =
+            VideoListAppendResponse.success(videoList, hasNextPage);
         when(mockAppendUseCase.execute(any)).thenAnswer((_) async => response);
 
         //  追加取得を行う。
@@ -70,8 +71,8 @@ void main() {
 
         //  追加取得に失敗するように設定する。
         const error = FetchErrorType.UnknownError;
-        when(mockAppendUseCase.execute(any))
-            .thenAnswer((_) async => VideoListAppendResponseFailure(error));
+        when(mockAppendUseCase.execute(any)).thenAnswer(
+            (_) async => const VideoListAppendResponse.failure(error));
 
         //  追加取得を行う。
         await bloc.fetchAdditionally();

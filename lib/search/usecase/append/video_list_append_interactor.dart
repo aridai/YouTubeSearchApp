@@ -18,12 +18,12 @@ class VideoListAppendInteractor implements VideoListAppendUseCase {
       final videoList = result.searchResultVideoList;
       final hasNextPage = result.hasNextPage;
 
-      return VideoListAppendResponseSuccess(videoList, hasNextPage);
+      return VideoListAppendResponse.success(videoList, hasNextPage);
     }
 
     //  取得に失敗した場合、エラーを返す。
     if (result is SearchRepositoryResultFailure) {
-      return VideoListAppendResponseFailure(result.cause);
+      return VideoListAppendResponse.failure(result.cause);
     }
 
     throw Exception();

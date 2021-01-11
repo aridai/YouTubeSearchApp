@@ -144,16 +144,17 @@ class SearchPageBloc {
     final request = VideoListAppendRequest();
     final response = await this._videoListAppendUseCase.execute(request);
 
-    //  成功時
-    if (response is VideoListAppendResponseSuccess)
-      this._onFetchSuccess(response.videoList, response.hasNextPage);
+    response.when(
+      //  成功時
+      success: (videoList, hasNext) => this._onFetchSuccess(videoList, hasNext),
 
-    //  失敗時
-    if (response is VideoListAppendResponseFailure) {
-      //  UIがややこしくなるため、追加取得失敗のリトライはできないようにする。
-      this._isAppendable.add(false);
-      this._onFetchFailure(response.cause, clearListOnError: false);
-    }
+      //  失敗時
+      failure: (cause) {
+        //  UIがややこしくなるため、追加取得失敗のリトライはできないようにする。
+        this._isAppendable.add(false);
+        this._onFetchFailure(cause, clearListOnError: false);
+      },
+    );
 
     this._isFetchingAdditionally.add(false);
   }
