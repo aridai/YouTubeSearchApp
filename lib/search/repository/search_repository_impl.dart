@@ -45,9 +45,9 @@ class SearchRepositoryImpl implements SearchRepository {
       this.query = query;
       this.videoList = videoList;
 
-      return SearchRepositoryResultSuccess(videoList, hasNextPage);
+      return SearchRepositoryResult.success(videoList, hasNextPage);
     } on Exception catch (e) {
-      return SearchRepositoryResultFailure(this._onError(e));
+      return SearchRepositoryResult.failure(this._onError(e));
     }
   }
 
@@ -71,9 +71,9 @@ class SearchRepositoryImpl implements SearchRepository {
       this.nextPageToken = result.nextPageToken;
       this.videoList = concatenatedVideoList;
 
-      return SearchRepositoryResultSuccess(concatenatedVideoList, hasNextPage);
+      return SearchRepositoryResult.success(concatenatedVideoList, hasNextPage);
     } on Exception catch (e) {
-      return SearchRepositoryResultFailure(this._onError(e));
+      return SearchRepositoryResult.failure(this._onError(e));
     }
   }
 

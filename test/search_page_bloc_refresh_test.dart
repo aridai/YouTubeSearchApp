@@ -35,7 +35,7 @@ void main() {
         //  という結果を返すように設定する。
         final videoList = List.generate(4, (_) => DummyVideo());
         const hasNextPage = true;
-        final response = VideoListFetchResponseSuccess(videoList, hasNextPage);
+        final response = VideoListFetchResponse.success(videoList, hasNextPage);
         when(mockFetchUseCase.execute(any)).thenAnswer((_) async => response);
 
         //  スワイプ更新を掛ける。
@@ -71,7 +71,7 @@ void main() {
         //  スワイプ更新に失敗するように設定する。
         const error = FetchErrorType.ClientError;
         when(mockFetchUseCase.execute(any)).thenAnswer(
-          (_) async => VideoListFetchResponseFailure(error),
+          (_) async => const VideoListFetchResponse.failure(error),
         );
 
         //  スワイプ更新を掛ける。
@@ -110,7 +110,7 @@ Future<void> runFirstTimeSearch(
   String keyword,
 ) async {
   when(mockFetchUseCase.execute(any)).thenAnswer(
-    (_) async => VideoListFetchResponseSuccess(
+    (_) async => VideoListFetchResponse.success(
       List.generate(2, (_) => DummyVideo()),
       false,
     ),

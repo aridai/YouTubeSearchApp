@@ -27,7 +27,7 @@ void main() {
       test('成功するケース', () async {
         final videoList = List.generate(3, (_) => DummyVideo());
         const hasNextPage = true;
-        final response = VideoListFetchResponseSuccess(videoList, hasNextPage);
+        final response = VideoListFetchResponse.success(videoList, hasNextPage);
 
         //  ProgressIndicatorの可視性を通知するStreamを記録する。
         final isProgressIndicatorVisible = ReplaySubject<bool>()
@@ -73,7 +73,7 @@ void main() {
 
       test('失敗するケース', () async {
         const error = FetchErrorType.TokenError;
-        final response = VideoListFetchResponseFailure(error);
+        const response = VideoListFetchResponse.failure(error);
 
         //  errorStreamの発火記録をReplaySubjectで記録しておく。
         final errorStream = ReplaySubject<FetchErrorType>()
@@ -103,7 +103,7 @@ void main() {
       test('取得自体には成功するが、動画リストが空であるケース', () async {
         final videoList = List<Video>.empty();
         const hasNextPage = false;
-        final response = VideoListFetchResponseSuccess(videoList, hasNextPage);
+        final response = VideoListFetchResponse.success(videoList, hasNextPage);
 
         //  検索に成功するが、1件も動画が見つからず、追加取得も不可能
         //  という結果を返すように設定する。
