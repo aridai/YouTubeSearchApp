@@ -1,5 +1,8 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
 import 'package:youtube_search_app/video.dart';
+
+part 'video_list_fetch_use_case.freezed.dart';
 
 //  動画リストを取得する。
 abstract class VideoListFetchUseCase {
@@ -19,23 +22,17 @@ class VideoListFetchRequest {
 }
 
 //  レスポンス
-abstract class VideoListFetchResponse {}
+@freezed
+abstract class VideoListFetchResponse with _$VideoListFetchResponse {
+  //  成功
+  const factory VideoListFetchResponse.success(
+    //  結果の動画リスト
+    List<Video> videoList,
 
-//  成功
-class VideoListFetchResponseSuccess extends VideoListFetchResponse {
-  VideoListFetchResponseSuccess(this.videoList, this.hasNextPage);
+    //  次のページが存在するかどうか
+    bool hasNextPage,
+  ) = Success;
 
-  //  結果の動画リスト
-  final List<Video> videoList;
-
-  //  次のページが存在するかどうか
-  final bool hasNextPage;
-}
-
-//  失敗
-class VideoListFetchResponseFailure extends VideoListFetchResponse {
-  VideoListFetchResponseFailure(this.cause);
-
-  //  エラーの原因
-  final FetchErrorType cause;
+  //  失敗
+  const factory VideoListFetchResponse.failure(FetchErrorType cause) = Failure;
 }

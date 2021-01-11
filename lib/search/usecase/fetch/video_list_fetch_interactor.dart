@@ -17,12 +17,12 @@ class VideoListFetchInteractor implements VideoListFetchUseCase {
       final videoList = result.searchResultVideoList;
       final hasNextPage = result.hasNextPage;
 
-      return VideoListFetchResponseSuccess(videoList, hasNextPage);
+      return VideoListFetchResponse.success(videoList, hasNextPage);
     }
 
     //  取得に失敗した場合、エラーとして返す。
     if (result is SearchRepositoryResultFailure) {
-      return VideoListFetchResponseFailure(result.cause);
+      return VideoListFetchResponse.failure(result.cause);
     }
 
     throw Exception();

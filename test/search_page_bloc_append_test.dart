@@ -107,7 +107,7 @@ Future<void> runFirstTimeSearch(
   String keyword,
 ) async {
   when(mockFetchUseCase.execute(any)).thenAnswer(
-    (_) async => VideoListFetchResponseSuccess(
+    (_) async => VideoListFetchResponse.success(
       List.generate(1, (_) => DummyVideo()),
       true,
     ),
