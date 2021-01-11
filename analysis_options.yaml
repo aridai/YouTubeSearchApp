@@ -11,6 +11,7 @@ analyzer:
   exclude:
     - "bin/cache/**"
     - "**/*.g.dart"
+    - "**/*.freezed.dart"
 
 linter:
   rules:
