@@ -11,21 +11,15 @@ class VideoListAppendInteractor implements VideoListAppendUseCase {
       VideoListAppendRequest request) async {
     final result = await this._searchRepository.searchAdditionally();
 
-    //  取得に成功した場合、フィルタリングして返す。
-    if (result is SearchRepositoryResultSuccess) {
-      //  TODO: フィルタリング処理
+    return result.when(
+      //  取得に成功した場合、フィルタリングして返す。
+      success: (list, hasNext) {
+        //  TODO: フィルタリング処理
+        return VideoListAppendResponse.success(list, hasNext);
+      },
 
-      final videoList = result.searchResultVideoList;
-      final hasNextPage = result.hasNextPage;
-
-      return VideoListAppendResponse.success(videoList, hasNextPage);
-    }
-
-    //  取得に失敗した場合、エラーを返す。
-    if (result is SearchRepositoryResultFailure) {
-      return VideoListAppendResponse.failure(result.cause);
-    }
-
-    throw Exception();
+      //  取得に失敗した場合、エラーを返す。
+      failure: (cause) => VideoListAppendResponse.failure(cause),
+    );
   }
 }
