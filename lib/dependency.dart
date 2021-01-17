@@ -1,6 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:youtube_search_app/env/env.dart';
+import 'package:youtube_search_app/search/filter/filter_dialog_bloc.dart';
+import 'package:youtube_search_app/search/filter/usecase/fetch/filtering_options_fetch_use_case.dart';
+import 'package:youtube_search_app/search/filter/usecase/fetch/stub_filtering_options_fetch_interactor.dart';
+import 'package:youtube_search_app/search/filter/usecase/save/filtering_options_save_use_case.dart';
+import 'package:youtube_search_app/search/filter/usecase/save/stub_filtering_options_save_interactor.dart';
 import 'package:youtube_search_app/search/repository/search_repository.dart';
 import 'package:youtube_search_app/search/repository/search_repository_impl.dart';
 import 'package:youtube_search_app/search/repository/youtube_api_service.dart';
@@ -37,9 +42,18 @@ class Dependency {
     GetIt.I.registerFactory<WatchHistorySaveUseCase>(
       () => StubWatchHistorySaveInteractor(),
     );
+    GetIt.I.registerFactory<FilteringOptionsFetchUseCase>(
+      () => StubFilteringOptionsFetchInteractor(),
+    );
+    GetIt.I.registerFactory<FilteringOptionsSaveUseCase>(
+      () => StubFilteringOptionsSaveInteractor(),
+    );
 
     GetIt.I.registerFactory<SearchPageBloc>(
       () => SearchPageBloc(resolve(), resolve(), resolve()),
+    );
+    GetIt.I.registerFactory<FilterDialogBloc>(
+      () => FilterDialogBloc(resolve(), resolve()),
     );
   }
 
