@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:youtube_search_app/dependency.dart';
+import 'package:youtube_search_app/search/filter/filter_dialog.dart';
+import 'package:youtube_search_app/search/search_keyword_field.dart';
 import 'package:youtube_search_app/search/search_page_bloc.dart';
 import 'package:youtube_search_app/search/search_page_drawer.dart';
-import 'package:youtube_search_app/search/search_keyword_field.dart';
 import 'package:youtube_search_app/search/search_page_list.dart';
 import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
 import 'package:youtube_search_app/youtube_app_launcher.dart';
@@ -114,7 +115,16 @@ class _SearchPageContentState extends State<_SearchPageContent> {
       const Center(child: CircularProgressIndicator());
 
   //  フィルタアイコンが押されたとき。
-  void _onFilterIconPressed() {}
+  Future<void> _onFilterIconPressed() async {
+    final shouldUpdate = await showDialog<bool>(
+      context: context,
+      builder: (context) => FilterDialog(),
+    );
+
+    if (shouldUpdate == true) {
+      //  TODO: 更新
+    }
+  }
 
   //  キーボードを非表示にする。
   void _dismissKeyboard(BuildContext context) {
