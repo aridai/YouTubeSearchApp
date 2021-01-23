@@ -25,7 +25,7 @@ void main() {
 
     group('検索のテスト', () {
       test('成功するケース', () async {
-        final videoList = List.generate(3, (_) => DummyVideo());
+        final videoList = List.generate(3, (_) => DummyVideo.create());
         const hasNextPage = true;
         final response = VideoListFetchResponse.success(videoList, hasNextPage);
 

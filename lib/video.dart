@@ -1,47 +1,39 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'video.freezed.dart';
+
 //  動画のモデル
-class Video {
-  Video(
-    this.videoId,
-    this.title,
-    this.description,
-    this.thumbnailUrl,
-    this.uploadedAt,
-    this.channelId,
-    this.channelTitle,
-  );
+@freezed
+abstract class Video with _$Video {
+  factory Video(
+    //  動画ID
+    String videoId,
 
-  //  動画ID
-  final String videoId;
+    //  動画タイトル
+    String title,
 
-  //  動画タイトル
-  final String title;
+    //  動画説明
+    String description,
 
-  //  動画説明
-  final String description;
+    //  動画サムネイルのURL
+    String thumbnailUrl,
 
-  //  動画サムネイルのURL
-  final String thumbnailUrl;
+    //  動画の投稿日時
+    DateTime uploadedAt,
 
-  //  動画の投稿日時
-  final DateTime uploadedAt;
+    //  この動画を投稿したチャンネルID
+    String channelId,
 
-  //  この動画を投稿したチャンネルID
-  final String channelId;
+    //  この動画を投稿したチャンネル名
+    String channelTitle,
 
-  //  この動画を投稿したチャンネル名
-  final String channelTitle;
+    //  視聴日時
+    @nullable DateTime watchedAt,
 
-  //  動画のURL
-  String get videoUrl => 'https://www.youtube.com/watch?v=${this.videoId}';
+    //  ブロックされている動画かどうか
+    bool isBlockedVideo,
 
-  @override
-  String toString() => 'Video('
-      'videoId=$videoId, '
-      'title=$title, '
-      'description=$description, '
-      'thumbnailUrl=$thumbnailUrl, '
-      'uploadedAt=$uploadedAt, '
-      'channelId=$channelId, '
-      'channelTitle=$channelTitle'
-      ')';
+    //  ブロックされているチャンネルの動画かどうか
+    bool isBlockedChannel,
+  ) = _Video;
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:youtube_search_app/search/repository/search_repository.dart';
 import 'package:youtube_search_app/search/repository/search_result.dart';
@@ -120,6 +121,7 @@ class SearchRepositoryImpl implements SearchRepository {
         final channelId = item.snippet.channelId;
         final channelTitle = item.snippet.channelTitle;
 
+        //  TODO: 追加されたフィールドの対応
         return Video(
           videoId,
           title,
@@ -128,6 +130,9 @@ class SearchRepositoryImpl implements SearchRepository {
           uploadedAt,
           channelId,
           channelTitle,
+          Random().nextBool() ? DateTime.now() : null,
+          Random().nextBool(),
+          Random().nextBool(),
         );
       }).toList();
 }
