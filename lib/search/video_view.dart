@@ -26,7 +26,10 @@ class VideoView extends StatelessWidget {
       child: Card(
         elevation: 3.0,
         child: InkWell(
-          child: this._buildCardContents(),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: this._buildCardContents(),
+          ),
           onTap: () => this._onTap(bloc),
           onLongPress: () => this._onLongPress(),
         ),
@@ -42,27 +45,27 @@ class VideoView extends StatelessWidget {
           this._buildVideoTitle(),
           this._buildChannelTitle(),
           this._buildUploadedAt(),
+          this._buildWatchedAt(),
+          this._buildBlockedVideoIcon(),
+          this._buildBlockedChannelIcon(),
         ],
       );
 
   //  動画のサムネイルを生成する。
-  Widget _buildVideoThumbnail() => Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          child: AspectRatio(
-            aspectRatio: _thumbnailAspectRatio,
-            child: Image.network(
-              this.model.thumbnailUrl,
-              fit: BoxFit.fill,
-              isAntiAlias: true,
-            ),
+  Widget _buildVideoThumbnail() => Container(
+        child: AspectRatio(
+          aspectRatio: _thumbnailAspectRatio,
+          child: Image.network(
+            this.model.thumbnailUrl,
+            fit: BoxFit.fill,
+            isAntiAlias: true,
           ),
         ),
       );
 
   //  動画のタイトルを生成する。
   Widget _buildVideoTitle() => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
         child: Text(
           this.model.title,
           style: const TextStyle(color: Colors.black),
@@ -71,7 +74,7 @@ class VideoView extends StatelessWidget {
 
   //  チャンネル名を生成する。
   Widget _buildChannelTitle() => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
         child: Text(
           this.model.channelTitle,
           style: const TextStyle(color: Colors.black87),
@@ -80,12 +83,60 @@ class VideoView extends StatelessWidget {
 
   //  動画の投稿日時を生成する。
   Widget _buildUploadedAt() => Padding(
-        padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+        padding: const EdgeInsets.only(top: 4.0, bottom: 4.0),
         child: Text(
           _formatter.format(this.model.uploadedAt),
           style: const TextStyle(color: Colors.black87),
         ),
       );
+
+  //  動画の視聴日時を生成する。
+  Widget _buildWatchedAt() {
+    if (this.model.watchedAt == null) return Container();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(right: 4.0),
+          child: Icon(Icons.remove_red_eye, size: 20.0, color: Colors.green),
+        ),
+        Text('視聴済み (${_formatter.format(this.model.watchedAt)})'),
+      ],
+    );
+  }
+
+  //  ブロックされた動画のアイコンを生成する。
+  Widget _buildBlockedVideoIcon() {
+    if (!this.model.isBlockedVideo) return Container();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: const [
+        Padding(
+          padding: EdgeInsets.only(right: 4.0),
+          child: Icon(Icons.block, size: 20.0, color: Colors.red),
+        ),
+        Text('ブロック済み動画')
+      ],
+    );
+  }
+
+  //  ブロックされたチャンネルのアイコンを生成する。
+  Widget _buildBlockedChannelIcon() {
+    if (!this.model.isBlockedChannel) return Container();
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: const [
+        Padding(
+          padding: EdgeInsets.only(right: 4.0),
+          child: Icon(Icons.block, size: 20.0, color: Colors.purple),
+        ),
+        Text('ブロック済みチャンネル')
+      ],
+    );
+  }
 
   //  この動画要素がタップされたとき。
   Future<void> _onTap(SearchPageBloc bloc) async {
