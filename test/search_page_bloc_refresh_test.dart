@@ -33,7 +33,7 @@ void main() {
 
         //  スワイプ更新に成功し、4件の動画が見つかり、追加取得が可能
         //  という結果を返すように設定する。
-        final videoList = List.generate(4, (_) => DummyVideo());
+        final videoList = List.generate(4, (_) => DummyVideo.create());
         const hasNextPage = true;
         final response = VideoListFetchResponse.success(videoList, hasNextPage);
         when(mockFetchUseCase.execute(any)).thenAnswer((_) async => response);
@@ -111,7 +111,7 @@ Future<void> runFirstTimeSearch(
 ) async {
   when(mockFetchUseCase.execute(any)).thenAnswer(
     (_) async => VideoListFetchResponse.success(
-      List.generate(2, (_) => DummyVideo()),
+      List.generate(2, (_) => DummyVideo.create()),
       false,
     ),
   );
