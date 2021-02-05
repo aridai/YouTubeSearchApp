@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:youtube_search_app/search/search_page.dart';
+import 'package:youtube_search_app/ui/search/search_page.dart';
 
 class MyApp extends StatelessWidget {
   @override
