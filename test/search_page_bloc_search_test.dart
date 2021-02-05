@@ -1,12 +1,12 @@
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
-import 'package:youtube_search_app/dummy_video.dart';
-import 'package:youtube_search_app/search/list_element.dart';
-import 'package:youtube_search_app/search/search_page_bloc.dart';
-import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_use_case.dart';
-import 'package:youtube_search_app/search/usecase/fetch_error_type.dart';
-import 'package:youtube_search_app/video.dart';
+import 'package:youtube_search_app/application/fetch_error_type.dart';
+import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/model/dummy_video.dart';
+import 'package:youtube_search_app/model/video.dart';
+import 'package:youtube_search_app/ui/search/list/list_element.dart';
+import 'package:youtube_search_app/ui/search/search_page_bloc.dart';
 
 import 'matchers.dart';
 import 'mocks.dart';

@@ -1,21 +1,21 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:youtube_search_app/application/history/save/stub_watch_history_save_interactor.dart';
+import 'package:youtube_search_app/application/history/save/watch_history_save_use_case.dart';
+import 'package:youtube_search_app/application/search/append/video_list_append_interactor.dart';
+import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
+import 'package:youtube_search_app/application/search/fetch/video_list_fetch_interactor.dart';
+import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/fetch/stub_filtering_options_fetch_interactor.dart';
+import 'package:youtube_search_app/application/search/filter/save/filtering_options_save_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/save/stub_filtering_options_save_interactor.dart';
+import 'package:youtube_search_app/application/search/search_repository.dart';
+import 'package:youtube_search_app/data/api/youtube_api_service.dart';
+import 'package:youtube_search_app/data/search/search_repository_impl.dart';
 import 'package:youtube_search_app/env/env.dart';
-import 'package:youtube_search_app/search/filter/filter_dialog_bloc.dart';
-import 'package:youtube_search_app/search/filter/usecase/fetch/filtering_options_fetch_use_case.dart';
-import 'package:youtube_search_app/search/filter/usecase/fetch/stub_filtering_options_fetch_interactor.dart';
-import 'package:youtube_search_app/search/filter/usecase/save/filtering_options_save_use_case.dart';
-import 'package:youtube_search_app/search/filter/usecase/save/stub_filtering_options_save_interactor.dart';
-import 'package:youtube_search_app/search/repository/search_repository.dart';
-import 'package:youtube_search_app/search/repository/search_repository_impl.dart';
-import 'package:youtube_search_app/search/repository/youtube_api_service.dart';
-import 'package:youtube_search_app/search/search_page_bloc.dart';
-import 'package:youtube_search_app/search/usecase/append/video_list_append_interactor.dart';
-import 'package:youtube_search_app/search/usecase/append/video_list_append_use_case.dart';
-import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_interactor.dart';
-import 'package:youtube_search_app/search/usecase/fetch/video_list_fetch_use_case.dart';
-import 'package:youtube_search_app/search/usecase/history/save/stub_watch_history_save_interactor.dart';
-import 'package:youtube_search_app/search/usecase/history/save/watch_history_save_use_case.dart';
+import 'package:youtube_search_app/ui/filter/dialog/filter_dialog_bloc.dart';
+import 'package:youtube_search_app/ui/search/search_page_bloc.dart';
 
 //  DIコンテナのラッパ
 class Dependency {

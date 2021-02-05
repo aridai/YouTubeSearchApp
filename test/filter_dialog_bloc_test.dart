@@ -1,11 +1,11 @@
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
-import 'package:youtube_search_app/search/filter/filter_dialog_bloc.dart';
-import 'package:youtube_search_app/search/filter/filtering_options.dart';
-import 'package:youtube_search_app/search/filter/regex_filter_type.dart';
-import 'package:youtube_search_app/search/filter/usecase/fetch/filtering_options_fetch_use_case.dart';
-import 'package:youtube_search_app/search/filter/usecase/save/filtering_options_save_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/save/filtering_options_save_use_case.dart';
+import 'package:youtube_search_app/model/filtering_options.dart';
+import 'package:youtube_search_app/ui/filter/dialog/filter_dialog_bloc.dart';
+import 'package:youtube_search_app/ui/filter/regex/regex_filter_type.dart';
 
 import 'mocks.dart';
 

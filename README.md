@@ -19,3 +19,15 @@ YOUTUBE_API_KEY=ここにYouTubeのAPIキーを配置
 ```
 flutter pub run build_runner build
 ```
+
+## パッケージ構成
+
+(プロジェクト規模が小さいため、技術駆動パッケージングを採用)
+
+* `lib`: プロダクションコード
+  * `application`: アプリケーション層 (ユースケースインタラクタなど)
+  * `data`: データ層 (リポジトリやAPIサービスなど)
+  * `env`: 環境変数
+  * `model`: モデルの定義など
+  * `ui`: UI層
+* `test`: テストコード
