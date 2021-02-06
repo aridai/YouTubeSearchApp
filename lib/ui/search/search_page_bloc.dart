@@ -3,6 +3,7 @@ import 'package:youtube_search_app/application/fetch_error_type.dart';
 import 'package:youtube_search_app/application/history/save/watch_history_save_use_case.dart';
 import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/reload/video_list_reload_use_case.dart';
 import 'package:youtube_search_app/model/video.dart';
 import 'package:youtube_search_app/ui/search/list/list_element.dart';
 
@@ -11,11 +12,13 @@ class SearchPageBloc {
   SearchPageBloc(
     this._videoListFetchUseCase,
     this._videoListAppendUseCase,
+    this._videoListReloadUseCase,
     this._watchHistorySaveUseCase,
   );
 
   final VideoListFetchUseCase _videoListFetchUseCase;
   final VideoListAppendUseCase _videoListAppendUseCase;
+  final VideoListReloadUseCase _videoListReloadUseCase;
   final WatchHistorySaveUseCase _watchHistorySaveUseCase;
 
   //  検索キーワード
@@ -39,6 +42,9 @@ class SearchPageBloc {
   //  (リスト末尾まで到達した際の追加取得が行われている状態)
   final _isFetchingAdditionally = BehaviorSubject.seeded(false);
 
+  //  検索フィルタを適用中かどうか
+  final _isApplyingSearchFilters = BehaviorSubject.seeded(false);
+
   //  直近のエラーを通知するSubject
   final _errorSubject = PublishSubject<FetchErrorType>();
 
@@ -49,12 +55,13 @@ class SearchPageBloc {
   final _videoOpenEventSubject = PublishSubject<String>();
 
   //  ビジー状態 (通信状態) かどうか
-  //  (3通りの更新処理のうち、いずれかが行われているかどうか)
-  Stream<bool> get _isBusy => Rx.combineLatest3<bool, bool, bool, bool>(
+  //  (4通りの更新処理のうち、いずれかが行われているかどうか)
+  Stream<bool> get _isBusy => Rx.combineLatest4<bool, bool, bool, bool, bool>(
         this._isFetching,
         this._isSwipeRefreshing,
         this._isFetchingAdditionally,
-        (fetch, swipe, add) => fetch || swipe || add,
+        this._isApplyingSearchFilters,
+        (fetch, swipe, add, filter) => fetch || swipe || add || filter,
       );
 
   //  検索キーワードのStream
@@ -87,6 +94,7 @@ class SearchPageBloc {
     this._isFetching.close();
     this._isSwipeRefreshing.close();
     this._isFetchingAdditionally.close();
+    this._isApplyingSearchFilters.close();
     this._errorSubject.close();
     this._isSavingWatchHistory.close();
     this._videoOpenEventSubject.close();
@@ -172,6 +180,18 @@ class SearchPageBloc {
     this._videoOpenEventSubject.add(video.videoId);
 
     this._isSavingWatchHistory.add(false);
+  }
+
+  //  フィルタオプションが更新されたとき。
+  Future<void> onFilterOptionsUpdated() async {
+    this._isApplyingSearchFilters.add(true);
+
+    //  動画リストをリロードする。
+    final request = VideoListReloadRequest();
+    final response = await this._videoListReloadUseCase.execute(request);
+    this._onFetchSuccess(response.videoList, response.hasNextPage);
+
+    this._isApplyingSearchFilters.add(false);
   }
 
   //  動画リストを検索ページで表示させるためのリストに変換する。
