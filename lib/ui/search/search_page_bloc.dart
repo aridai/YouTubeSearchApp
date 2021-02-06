@@ -184,8 +184,8 @@ class SearchPageBloc {
       return List.generate(
         totalSize,
         (i) => (i != lastIndex)
-            ? VideoElement(videos[i])
-            : ProgressIndicatorElement(),
+            ? ListElement.video(videos[i])
+            : const ListElement.indicator(),
       );
     } else {
       return List.generate(videos.length, (i) => VideoElement(videos[i]));

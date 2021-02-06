@@ -37,12 +37,10 @@ class SearchPageList extends StatelessWidget {
       );
 
   //  リスト要素を生成する。
-  Widget _buildListElement(int index, ListElement element) {
-    if (element is VideoElement) return VideoView(index, element.model);
-    if (element is ProgressIndicatorElement) return TrailProgressView();
-
-    throw Exception();
-  }
+  Widget _buildListElement(int index, ListElement element) => element.when(
+        video: (video) => VideoView(index, video),
+        indicator: () => TrailProgressView(),
+      );
 
   //  スワイプ更新が掛けられたとき。
   Future<void> _onRefresh(SearchPageBloc bloc) async {
