@@ -42,7 +42,7 @@ class Dependency {
       () => VideoListAppendInteractor(resolve()),
     );
     GetIt.I.registerFactory<VideoListReloadUseCase>(
-      () => VideoListReloadInteractor(),
+      () => VideoListReloadInteractor(resolve()),
     );
     GetIt.I.registerFactory<WatchHistorySaveUseCase>(
       () => StubWatchHistorySaveInteractor(),
