@@ -1,11 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'video.freezed.dart';
+part 'video_item.freezed.dart';
 
-//  動画の情報と視聴履歴とブロック情報を持つモデル
+//  動画の情報を持つモデル
 @freezed
-abstract class Video with _$Video {
-  factory Video(
+abstract class VideoItem with _$VideoItem {
+  factory VideoItem(
     //  動画ID
     String videoId,
 
@@ -26,14 +26,5 @@ abstract class Video with _$Video {
 
     //  この動画を投稿したチャンネル名
     String channelTitle,
-
-    //  視聴日時
-    @nullable DateTime watchedAt,
-
-    //  ブロックされている動画かどうか
-    bool isBlockedVideo,
-
-    //  ブロックされているチャンネルの動画かどうか
-    bool isBlockedChannel,
-  ) = _Video;
+  ) = _VideoItem;
 }
