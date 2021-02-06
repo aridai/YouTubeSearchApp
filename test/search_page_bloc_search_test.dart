@@ -15,11 +15,13 @@ void main() {
   group('SearchPageBlocのテスト', () {
     final mockFetchUseCase = MockVideoListFetchUseCase();
     final mockAppendUseCase = MockVideoListAppendUseCase();
+    final mockReloadUseCase = MockVideoListReloadUseCase();
     final mockHistoryUseCase = MockWatchHistorySaveUseCase();
 
     final bloc = SearchPageBloc(
       mockFetchUseCase,
       mockAppendUseCase,
+      mockReloadUseCase,
       mockHistoryUseCase,
     );
 

@@ -1,5 +1,7 @@
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
 import 'package:youtube_search_app/application/search/search_repository.dart';
+import 'package:youtube_search_app/application/search/search_result.dart';
+import 'package:youtube_search_app/application/search/video_converter.dart';
 
 class VideoListFetchInteractor implements VideoListFetchUseCase {
   VideoListFetchInteractor(this._searchRepository);
@@ -12,9 +14,16 @@ class VideoListFetchInteractor implements VideoListFetchUseCase {
 
     return result.when(
       //  取得に成功した場合、オプションに応じてフィルタリングする。
-      success: (list, hasNext) {
+      success: (result) {
+        //  TODO: 視聴履歴の検索処理
+        //  TODO: ブロックデータの取得処理
         //  TODO: フィルタリング処理
-        return VideoListFetchResponse.success(list, hasNext);
+
+        final videoList = result.videos
+            .map((item) => VideoConverter.convert(item, null, false, false))
+            .toList(growable: false);
+
+        return VideoListFetchResponse.success(videoList, result.hasNextPage);
       },
 
       //  取得に失敗した場合、エラーとして返す。

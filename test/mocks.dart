@@ -4,6 +4,7 @@ import 'package:youtube_search_app/application/search/append/video_list_append_u
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
 import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_use_case.dart';
 import 'package:youtube_search_app/application/search/filter/save/filtering_options_save_use_case.dart';
+import 'package:youtube_search_app/application/search/reload/video_list_reload_use_case.dart';
 
 //  VideoListFetchUseCaseのモック
 class MockVideoListFetchUseCase extends Mock implements VideoListFetchUseCase {}
@@ -11,6 +12,10 @@ class MockVideoListFetchUseCase extends Mock implements VideoListFetchUseCase {}
 //  VideoListAppendUseCaseのモック
 class MockVideoListAppendUseCase extends Mock
     implements VideoListAppendUseCase {}
+
+//  VideoListReloadUseCaseのモック
+class MockVideoListReloadUseCase extends Mock
+    implements VideoListReloadUseCase {}
 
 //  WatchHistorySaveUseCaseのモック
 class MockWatchHistorySaveUseCase extends Mock

@@ -1,5 +1,7 @@
 import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/application/search/search_repository.dart';
+import 'package:youtube_search_app/application/search/search_result.dart';
+import 'package:youtube_search_app/application/search/video_converter.dart';
 
 class VideoListAppendInteractor implements VideoListAppendUseCase {
   VideoListAppendInteractor(this._searchRepository);
@@ -13,9 +15,16 @@ class VideoListAppendInteractor implements VideoListAppendUseCase {
 
     return result.when(
       //  取得に成功した場合、フィルタリングして返す。
-      success: (list, hasNext) {
+      success: (result) {
+        //  TODO: 視聴履歴の検索処理
+        //  TODO: ブロックデータの取得処理
         //  TODO: フィルタリング処理
-        return VideoListAppendResponse.success(list, hasNext);
+
+        final videoList = result.videos
+            .map((item) => VideoConverter.convert(item, null, false, false))
+            .toList(growable: false);
+
+        return VideoListAppendResponse.success(videoList, result.hasNextPage);
       },
 
       //  取得に失敗した場合、エラーを返す。

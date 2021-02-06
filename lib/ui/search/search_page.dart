@@ -46,7 +46,7 @@ class _SearchPageContentState extends State<_SearchPageContent> {
     final bloc = Provider.of<SearchPageBloc>(context);
 
     return Scaffold(
-      appBar: this._buildAppBar(),
+      appBar: this._buildAppBar(bloc),
       drawer: SearchPageDrawer(),
       body: this._buildBody(context, bloc),
     );
@@ -59,15 +59,15 @@ class _SearchPageContentState extends State<_SearchPageContent> {
   }
 
   //  アプリバーを生成する。
-  PreferredSizeWidget _buildAppBar() => AppBar(
+  PreferredSizeWidget _buildAppBar(SearchPageBloc bloc) => AppBar(
         title: SearchKeywordField(),
-        actions: [this._buildFilterIcon()],
+        actions: [this._buildFilterIcon(bloc)],
       );
 
   //  フィルタアイコンを生成する。
-  Widget _buildFilterIcon() => IconButton(
+  Widget _buildFilterIcon(SearchPageBloc bloc) => IconButton(
         icon: const Icon(Icons.filter_list),
-        onPressed: () => this._onFilterIconPressed(),
+        onPressed: () => this._onFilterIconPressed(bloc),
       );
 
   //  ボディを生成する。
@@ -115,15 +115,13 @@ class _SearchPageContentState extends State<_SearchPageContent> {
       const Center(child: CircularProgressIndicator());
 
   //  フィルタアイコンが押されたとき。
-  Future<void> _onFilterIconPressed() async {
-    final shouldUpdate = await showDialog<bool>(
+  Future<void> _onFilterIconPressed(SearchPageBloc bloc) async {
+    final updated = await showDialog<bool>(
       context: context,
       builder: (context) => FilterDialog(),
     );
 
-    if (shouldUpdate == true) {
-      //  TODO: 更新
-    }
+    if (updated == true) await bloc.onFilterOptionsUpdated();
   }
 
   //  キーボードを非表示にする。

@@ -1,139 +1,92 @@
-import 'dart:io';
-import 'dart:math';
-
-import 'package:dio/dio.dart';
-import 'package:youtube_search_app/application/fetch_error_type.dart';
 import 'package:youtube_search_app/application/search/search_repository.dart';
-import 'package:youtube_search_app/data/api/search_result.dart';
+import 'package:youtube_search_app/application/search/search_result.dart';
 import 'package:youtube_search_app/data/api/youtube_api_service.dart';
-import 'package:youtube_search_app/model/video.dart';
+import 'package:youtube_search_app/data/search/fetch_error_type_converter.dart';
+import 'package:youtube_search_app/data/search/video_item_converter.dart';
+import 'package:youtube_search_app/data/search/youtube_search_result.dart';
 
 class SearchRepositoryImpl implements SearchRepository {
   SearchRepositoryImpl(this._apiService, this._apiKey);
 
+  //  1回の検索に含める件数
   static const int _maxResults = 10;
 
   final YouTubeApiService _apiService;
   final String _apiKey;
 
-  //  検索クエリ
-  String query = null;
+  //  直近の検索結果
+  YouTubeSearchResult _result = null;
 
-  //  次ページ用トークン
-  String nextPageToken = null;
+  //  直近の検索結果を返す。
+  //  nullの場合もそのまま返す。
+  @override
+  SearchResult getSearchResult() => this._result?.asSearchResult();
 
-  //  動画リスト
-  List<Video> videoList = null;
-
+  //  新規に検索を掛ける。
   @override
   Future<SearchRepositoryResult> search(String keyword) async {
     //  TODO: エンコードの検討
     final query = keyword;
 
     try {
-      final result = await this._apiService.search(
+      final apiResult = await this._apiService.search(
             query: query,
             maxResults: _maxResults,
             key: this._apiKey,
           );
 
-      result.items.map((e) => e.id.videoId);
+      //  検索結果を変換する。
+      final videoList = apiResult.items
+          .map((item) => VideoItemConverter.convert(item))
+          .toList(growable: false);
+      final result =
+          YouTubeSearchResult(query, [videoList], apiResult.nextPageToken);
 
-      final videoList = this._mapVideoList(result.items);
-      final hasNextPage = result.nextPageToken != null;
+      //  検索情報を保持しておく。
+      this._result = result;
 
-      //  検索情報を残しておく。
-      this.nextPageToken = result.nextPageToken;
-      this.query = query;
-      this.videoList = videoList;
-
-      return SearchRepositoryResult.success(videoList, hasNextPage);
+      return SearchRepositoryResult.success(result.asSearchResult());
     } on Exception catch (e) {
-      return SearchRepositoryResult.failure(this._onError(e));
+      final errorType = FetchErrorTypeConverter.convert(e);
+
+      return SearchRepositoryResult.failure(errorType);
     }
   }
 
+  //  追加で検索を掛ける。
   @override
   Future<SearchRepositoryResult> searchAdditionally() async {
+    //  このメソッドは前回の検索結果が絶対に存在するときに呼ばれるはず。
+    final prevResult = this._result;
+    if (prevResult == null) throw StateError('前回の検索結果が存在しない状態で追加取得を試行しました。');
+
     try {
-      final result = await this._apiService.search(
-            query: query,
-            pageToken: this.nextPageToken,
+      final apiResult = await this._apiService.search(
+            query: prevResult.query,
+            pageToken: prevResult.nextPageToken,
             maxResults: _maxResults,
             key: this._apiKey,
           );
 
-      result.items.map((e) => e.id.videoId);
+      //  追加で取得した動画リストを既存の動画リストのリストの末尾に追加する。
+      final additionalVideoList = apiResult.items
+          .map((item) => VideoItemConverter.convert(item))
+          .toList(growable: false);
+      final updatedVideoLists = prevResult.videoLists + [additionalVideoList];
 
-      final additionalVideoList = this._mapVideoList(result.items);
-      final concatenatedVideoList = this.videoList + additionalVideoList;
-      final hasNextPage = result.nextPageToken != null;
+      //  更新した検索結果データを生成し、保持しておく。
+      final updatedResult = YouTubeSearchResult(
+        prevResult.query,
+        updatedVideoLists,
+        apiResult.nextPageToken,
+      );
+      this._result = updatedResult;
 
-      //  検索情報を残しておく。
-      this.nextPageToken = result.nextPageToken;
-      this.videoList = concatenatedVideoList;
-
-      return SearchRepositoryResult.success(concatenatedVideoList, hasNextPage);
+      return SearchRepositoryResult.success(updatedResult.asSearchResult());
     } on Exception catch (e) {
-      return SearchRepositoryResult.failure(this._onError(e));
+      final errorType = FetchErrorTypeConverter.convert(e);
+
+      return SearchRepositoryResult.failure(errorType);
     }
   }
-
-  //  エラーが発生したとき。
-  //  エラー原因を大まかに切り分ける。
-  FetchErrorType _onError(Exception e) {
-    if (e is DioError) {
-      print('DIOエラー: $e');
-
-      switch (e.type) {
-        //  トークンまわりのエラー
-        case DioErrorType.RESPONSE:
-          return FetchErrorType.TokenError;
-
-        //  タイムアウト系はGoogleのサーバが遅いことはあまり考えられないため、
-        //  クライアント側のエラーとみなしてしまう。
-        case DioErrorType.CONNECT_TIMEOUT:
-        case DioErrorType.SEND_TIMEOUT:
-        case DioErrorType.RECEIVE_TIMEOUT:
-          return FetchErrorType.ClientError;
-
-        //  オフライン環境で実行するとSocketExceptionが投げられる。
-        case DioErrorType.DEFAULT:
-          return e.response is SocketException
-              ? FetchErrorType.ClientError
-              : FetchErrorType.UnknownError;
-
-        default:
-          return FetchErrorType.UnknownError;
-      }
-    } else {
-      print('エラー: $e');
-      return FetchErrorType.UnknownError;
-    }
-  }
-
-  //  動画リストに変換する。
-  List<Video> _mapVideoList(List<Item> source) => source.map((item) {
-        final videoId = item.id.videoId;
-        final title = item.snippet.title;
-        final description = item.snippet.description;
-        final thumbnailUrl = item.snippet.thumbnails.medium.url;
-        final uploadedAt = item.snippet.publishedAt;
-        final channelId = item.snippet.channelId;
-        final channelTitle = item.snippet.channelTitle;
-
-        //  TODO: 追加されたフィールドの対応
-        return Video(
-          videoId,
-          title,
-          description,
-          thumbnailUrl,
-          uploadedAt,
-          channelId,
-          channelTitle,
-          Random().nextBool() ? DateTime.now() : null,
-          Random().nextBool(),
-          Random().nextBool(),
-        );
-      }).toList();
 }
