@@ -46,13 +46,13 @@ class Dependency {
     );
 
     GetIt.I.registerFactory<VideoListFetchUseCase>(
-      () => VideoListFetchInteractor(resolve()),
+      () => VideoListFetchInteractor(resolve(), resolve()),
     );
     GetIt.I.registerFactory<VideoListAppendUseCase>(
-      () => VideoListAppendInteractor(resolve()),
+      () => VideoListAppendInteractor(resolve(), resolve()),
     );
     GetIt.I.registerFactory<VideoListReloadUseCase>(
-      () => VideoListReloadInteractor(resolve()),
+      () => VideoListReloadInteractor(resolve(), resolve()),
     );
     GetIt.I.registerFactory<WatchHistorySaveUseCase>(
       () => WatchHistorySaveInteractor(resolve(), resolve()),
