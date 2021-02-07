@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
-import 'package:youtube_search_app/application/history/save/stub_watch_history_save_interactor.dart';
-import 'package:youtube_search_app/application/history/save/watch_history_save_use_case.dart';
+import 'package:youtube_search_app/application/history/watch/save/stub_watch_history_save_interactor.dart';
+import 'package:youtube_search_app/application/history/watch/save/watch_history_save_use_case.dart';
 import 'package:youtube_search_app/application/search/append/video_list_append_interactor.dart';
 import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_interactor.dart';

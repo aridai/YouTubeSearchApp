@@ -1,4 +1,4 @@
-import 'package:youtube_search_app/application/history/save/watch_history_save_use_case.dart';
+import 'package:youtube_search_app/application/history/watch/save/watch_history_save_use_case.dart';
 
 class StubWatchHistorySaveInteractor implements WatchHistorySaveUseCase {
   @override
