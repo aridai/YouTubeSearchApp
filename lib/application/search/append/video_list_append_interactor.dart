@@ -1,3 +1,4 @@
+import 'package:youtube_search_app/application/block/block_list_repository.dart';
 import 'package:youtube_search_app/application/history/watch/watch_history_repository.dart';
 import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/application/search/search_repository.dart';
@@ -10,10 +11,12 @@ class VideoListAppendInteractor implements VideoListAppendUseCase {
   VideoListAppendInteractor(
     this._searchRepository,
     this._watchHistoryRepository,
+    this._blockListRepository,
   );
 
   final SearchRepository _searchRepository;
   final WatchHistoryRepository _watchHistoryRepository;
+  final BlockListRepository _blockListRepository;
 
   @override
   Future<VideoListAppendResponse> execute(
@@ -41,16 +44,16 @@ class VideoListAppendInteractor implements VideoListAppendUseCase {
   Future<Video> toVideo(VideoItem item) async {
     final watchedAt =
         await this._watchHistoryRepository.getWatchedAt(item.videoId);
-
-    //  TODO: ブロックデータの取得処理
-    const isBlockedVideo = false;
-    const isBlockedChannel = false;
+    final videoBlockedAt =
+        await this._blockListRepository.getVideoBlockedAt(item.videoId);
+    final channelBlockedAt =
+        await this._blockListRepository.getChannelBlockedAt(item.channelId);
 
     return VideoConverter.convert(
       item,
       watchedAt,
-      isBlockedVideo,
-      isBlockedChannel,
+      videoBlockedAt != null,
+      channelBlockedAt != null,
     );
   }
 }
