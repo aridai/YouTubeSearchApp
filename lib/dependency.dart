@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:youtube_search_app/application/block/block_list_repository.dart';
 import 'package:youtube_search_app/application/history/watch/current_date_time_provider.dart';
 import 'package:youtube_search_app/application/history/watch/save/watch_history_save_interactor.dart';
 import 'package:youtube_search_app/application/history/watch/save/watch_history_save_use_case.dart';
@@ -16,6 +17,7 @@ import 'package:youtube_search_app/application/search/reload/video_list_reload_i
 import 'package:youtube_search_app/application/search/reload/video_list_reload_use_case.dart';
 import 'package:youtube_search_app/application/search/search_repository.dart';
 import 'package:youtube_search_app/data/api/youtube_api_service.dart';
+import 'package:youtube_search_app/data/block/block_list_repository_impl.dart';
 import 'package:youtube_search_app/data/history/watch/watch_history_repository_impl.dart';
 import 'package:youtube_search_app/data/search/search_repository_impl.dart';
 import 'package:youtube_search_app/env/env.dart';
@@ -44,15 +46,18 @@ class Dependency {
     GetIt.I.registerLazySingleton<WatchHistoryRepository>(
       () => WatchHistoryRepositoryImpl(),
     );
+    GetIt.I.registerLazySingleton<BlockListRepository>(
+      () => BlockListRepositoryImpl(),
+    );
 
     GetIt.I.registerFactory<VideoListFetchUseCase>(
-      () => VideoListFetchInteractor(resolve(), resolve()),
+      () => VideoListFetchInteractor(resolve(), resolve(), resolve()),
     );
     GetIt.I.registerFactory<VideoListAppendUseCase>(
-      () => VideoListAppendInteractor(resolve(), resolve()),
+      () => VideoListAppendInteractor(resolve(), resolve(), resolve()),
     );
     GetIt.I.registerFactory<VideoListReloadUseCase>(
-      () => VideoListReloadInteractor(resolve(), resolve()),
+      () => VideoListReloadInteractor(resolve(), resolve(), resolve()),
     );
     GetIt.I.registerFactory<WatchHistorySaveUseCase>(
       () => WatchHistorySaveInteractor(resolve(), resolve()),
