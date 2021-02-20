@@ -20,7 +20,7 @@ void main() {
     const initIncludesBlockedChannels = false;
     const initRegexPatternString = '(.*)R18(.*)';
     const initRegexFiltering = RegexFiltering.black(initRegexPatternString);
-    final initialOptions = FilteringOptions(
+    const initialOptions = FilteringOptions(
       initIncludesWatchedVideos,
       initIncludesBlockedVideos,
       initIncludesBlockedChannels,
@@ -107,11 +107,11 @@ void main() {
       bloc.onRegexFilterTypeChanged(RegexFilterType.BLACK_LIST);
       bloc.onRegexFilterPatternStringChanged('(.*)R15(.*)');
 
-      final expectedOptions = FilteringOptions(
+      const expectedOptions = FilteringOptions(
         true,
         false,
         true,
-        const RegexFiltering.black('(.*)R15(.*)'),
+        RegexFiltering.black('(.*)R15(.*)'),
       );
 
       //  OKボタンを押すと設定したオプションの保存処理が呼ばれるはず。

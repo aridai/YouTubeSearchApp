@@ -22,7 +22,7 @@ void main() {
 
     when(mockOptionsUseCase.execute(any)).thenReturn(
       FilteringOptionsFetchResponse(
-          FilteringOptions(true, false, false, const RegexFiltering.none())),
+          const FilteringOptions(true, false, false, RegexFiltering.none())),
     );
 
     final bloc = SearchPageBloc(

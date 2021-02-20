@@ -6,7 +6,7 @@ part 'filtering_options.freezed.dart';
 //  フィルタリングオプション
 @freezed
 abstract class FilteringOptions with _$FilteringOptions {
-  factory FilteringOptions(
+  const factory FilteringOptions(
     //  視聴済み動画を含めるかどうか
     bool includesWatchedVideos,
 
@@ -19,6 +19,14 @@ abstract class FilteringOptions with _$FilteringOptions {
     //  正規表現フィルタ
     RegexFiltering regexFiltering,
   ) = _FilteringOptions;
+
+  //  初期設定
+  factory FilteringOptions.initial() => const FilteringOptions(
+        true,
+        false,
+        false,
+        RegexFiltering.none(),
+      );
 }
 
 //  正規表現フィルタ
