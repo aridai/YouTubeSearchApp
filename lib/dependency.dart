@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youtube_search_app/application/block/block_list_repository.dart';
 import 'package:youtube_search_app/application/history/watch/current_date_time_provider.dart';
 import 'package:youtube_search_app/application/history/watch/save/watch_history_save_interactor.dart';
@@ -27,11 +28,14 @@ import 'package:youtube_search_app/ui/search/search_page_bloc.dart';
 //  DIコンテナのラッパ
 class Dependency {
   //  依存関係の設定を行う。
-  static void setup() {
+  static Future<void> setup() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     GetIt.I.registerSingleton(
       Env.youtubeApiKey,
       instanceName: 'YOUTUBE_API_KEY',
     );
+    GetIt.I.registerSingleton<SharedPreferences>(sharedPreferences);
 
     GetIt.I.registerLazySingleton<CurrentDateTimeProvider>(
       () => CurrentDateTimeProvider(),
