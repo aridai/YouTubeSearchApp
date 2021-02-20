@@ -3,19 +3,23 @@ import 'package:youtube_search_app/application/fetch_error_type.dart';
 import 'package:youtube_search_app/application/history/watch/save/watch_history_save_use_case.dart';
 import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_use_case.dart';
 import 'package:youtube_search_app/application/search/reload/video_list_reload_use_case.dart';
+import 'package:youtube_search_app/model/filtering_options.dart';
 import 'package:youtube_search_app/model/video.dart';
 import 'package:youtube_search_app/ui/search/list/list_element.dart';
 
 //  検索ページのBLoC
 class SearchPageBloc {
   SearchPageBloc(
+    this._filteringOptionsFetchUseCase,
     this._videoListFetchUseCase,
     this._videoListAppendUseCase,
     this._videoListReloadUseCase,
     this._watchHistorySaveUseCase,
   );
 
+  final FilteringOptionsFetchUseCase _filteringOptionsFetchUseCase;
   final VideoListFetchUseCase _videoListFetchUseCase;
   final VideoListAppendUseCase _videoListAppendUseCase;
   final VideoListReloadUseCase _videoListReloadUseCase;
@@ -53,6 +57,12 @@ class SearchPageBloc {
 
   //  動画を開くイベントを通知するSubject
   final _videoOpenEventSubject = PublishSubject<String>();
+
+  //  検索フィルタリングオプションを取得する。
+  FilteringOptions get _options => this
+      ._filteringOptionsFetchUseCase
+      .execute(FilteringOptionsFetchRequest())
+      .options;
 
   //  ビジー状態 (通信状態) かどうか
   //  (4通りの更新処理のうち、いずれかが行われているかどうか)
@@ -107,7 +117,7 @@ class SearchPageBloc {
 
     this._isFetching.add(true);
 
-    final request = VideoListFetchRequest(this._keyword.value, null);
+    final request = VideoListFetchRequest(this._keyword.value, this._options);
     final response = await this._videoListFetchUseCase.execute(request);
 
     response.when(
@@ -128,7 +138,7 @@ class SearchPageBloc {
 
     this._isSwipeRefreshing.add(true);
 
-    final request = VideoListFetchRequest(this._keyword.value, null);
+    final request = VideoListFetchRequest(this._keyword.value, this._options);
     final response = await this._videoListFetchUseCase.execute(request);
 
     response.when(
@@ -149,7 +159,7 @@ class SearchPageBloc {
 
     this._isFetchingAdditionally.add(true);
 
-    final request = VideoListAppendRequest();
+    final request = VideoListAppendRequest(this._options);
     final response = await this._videoListAppendUseCase.execute(request);
 
     response.when(
@@ -187,7 +197,7 @@ class SearchPageBloc {
     this._isApplyingSearchFilters.add(true);
 
     //  動画リストをリロードする。
-    final request = VideoListReloadRequest();
+    final request = VideoListReloadRequest(this._options);
     final response = await this._videoListReloadUseCase.execute(request);
     this._onFetchSuccess(response.videoList, response.hasNextPage);
 

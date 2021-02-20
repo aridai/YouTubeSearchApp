@@ -70,7 +70,13 @@ class Dependency {
     );
 
     GetIt.I.registerFactory<SearchPageBloc>(
-      () => SearchPageBloc(resolve(), resolve(), resolve(), resolve()),
+      () => SearchPageBloc(
+        resolve(),
+        resolve(),
+        resolve(),
+        resolve(),
+        resolve(),
+      ),
     );
     GetIt.I.registerFactory<FilterDialogBloc>(
       () => FilterDialogBloc(resolve(), resolve()),
