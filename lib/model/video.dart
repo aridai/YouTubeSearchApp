@@ -37,3 +37,8 @@ abstract class Video with _$Video {
     bool isBlockedChannel,
   ) = _Video;
 }
+
+extension VideoExtension on Video {
+  //  視聴済みかどうか
+  bool get hasBeenWatched => this.watchedAt != null;
+}

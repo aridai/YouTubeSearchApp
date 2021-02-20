@@ -4,6 +4,7 @@ import 'package:youtube_search_app/application/search/reload/video_list_reload_u
 import 'package:youtube_search_app/application/search/search_repository.dart';
 import 'package:youtube_search_app/application/search/search_result.dart';
 import 'package:youtube_search_app/application/search/video_converter.dart';
+import 'package:youtube_search_app/model/filtering_options.dart';
 import 'package:youtube_search_app/model/video.dart';
 import 'package:youtube_search_app/model/video_item.dart';
 
@@ -22,30 +23,33 @@ class VideoListReloadInteractor implements VideoListReloadUseCase {
   Future<VideoListReloadResponse> execute(
       VideoListReloadRequest request) async {
     final result = this._searchRepository.getSearchResult();
-
-    //  TODO: フィルタリング処理
-    final videoList = await Future.wait(
-      result.videos.map((item) async => this.toVideo(item)),
-    );
-
-    //  TODO: 検索履歴の更新
+    final videoList =
+        await this._convert(result.videos, request.options).toList();
 
     return VideoListReloadResponse(videoList, result.hasNextPage);
   }
 
-  Future<Video> toVideo(VideoItem item) async {
-    final watchedAt =
-        await this._watchHistoryRepository.getWatchedAt(item.videoId);
-    final videoBlockedAt =
-        await this._blockListRepository.getVideoBlockedAt(item.videoId);
-    final channelBlockedAt =
-        await this._blockListRepository.getChannelBlockedAt(item.channelId);
+  //  動画リストの変換を掛ける。
+  Stream<Video> _convert(List<VideoItem> list, FilteringOptions filter) async* {
+    for (final item in list) {
+      //  履歴データを取得する。
+      final watchedAt =
+          await this._watchHistoryRepository.getWatchedAt(item.videoId);
+      final videoBlockedAt =
+          await this._blockListRepository.getVideoBlockedAt(item.videoId);
+      final channelBlockedAt =
+          await this._blockListRepository.getChannelBlockedAt(item.channelId);
 
-    return VideoConverter.convert(
-      item,
-      watchedAt,
-      videoBlockedAt != null,
-      channelBlockedAt != null,
-    );
+      //  Video型に変換する。
+      final video = VideoConverter.convert(
+        item,
+        watchedAt,
+        videoBlockedAt != null,
+        channelBlockedAt != null,
+      );
+
+      //  フィルタリングを掛けて、対象のみ含めるようにする。
+      if (filter.shouldInclude(video)) yield video;
+    }
   }
 }

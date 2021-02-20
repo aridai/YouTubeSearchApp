@@ -92,7 +92,7 @@ class VideoView extends StatelessWidget {
 
   //  動画の視聴日時を生成する。
   Widget _buildWatchedAt() {
-    if (this.model.watchedAt == null) return Container();
+    if (!this.model.hasBeenWatched) return Container();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
