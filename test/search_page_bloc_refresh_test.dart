@@ -3,7 +3,9 @@ import 'package:rxdart/rxdart.dart';
 import 'package:test/test.dart';
 import 'package:youtube_search_app/application/fetch_error_type.dart';
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_use_case.dart';
 import 'package:youtube_search_app/model/dummy_video.dart';
+import 'package:youtube_search_app/model/filtering_options.dart';
 import 'package:youtube_search_app/ui/search/list/list_element.dart';
 import 'package:youtube_search_app/ui/search/search_page_bloc.dart';
 
@@ -12,12 +14,19 @@ import 'mocks.dart';
 
 void main() {
   group('SearchPageBlocのテスト', () {
+    final mockOptionsUseCase = MockFilteringOptionsFetchUseCase();
     final mockFetchUseCase = MockVideoListFetchUseCase();
     final mockAppendUseCase = MockVideoListAppendUseCase();
     final mockReloadUseCase = MockVideoListReloadUseCase();
     final mockHistoryUseCase = MockWatchHistorySaveUseCase();
 
+    when(mockOptionsUseCase.execute(any)).thenReturn(
+      FilteringOptionsFetchResponse(
+          FilteringOptions(true, false, false, const RegexFiltering.none())),
+    );
+
     final bloc = SearchPageBloc(
+      mockOptionsUseCase,
       mockFetchUseCase,
       mockAppendUseCase,
       mockReloadUseCase,
