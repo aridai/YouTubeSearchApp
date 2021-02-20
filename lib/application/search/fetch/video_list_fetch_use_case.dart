@@ -1,10 +1,11 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:youtube_search_app/application/fetch_error_type.dart';
+import 'package:youtube_search_app/model/filtering_options.dart';
 import 'package:youtube_search_app/model/video.dart';
 
 part 'video_list_fetch_use_case.freezed.dart';
 
-//  動画リストを取得する。
+//  動画リストを取得するユースケース
 abstract class VideoListFetchUseCase {
   Future<VideoListFetchResponse> execute(VideoListFetchRequest request);
 }
@@ -16,9 +17,8 @@ class VideoListFetchRequest {
   //  キーワード
   final String keyword;
 
-  //  検索オプション
-  //  (仮)
-  final Object options;
+  //  フィルタオプション
+  final FilteringOptions options;
 }
 
 //  レスポンス

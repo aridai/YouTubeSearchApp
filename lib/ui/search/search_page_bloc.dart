@@ -149,7 +149,7 @@ class SearchPageBloc {
 
     this._isFetchingAdditionally.add(true);
 
-    final request = VideoListAppendRequest();
+    final request = VideoListAppendRequest(null);
     final response = await this._videoListAppendUseCase.execute(request);
 
     response.when(
@@ -187,7 +187,7 @@ class SearchPageBloc {
     this._isApplyingSearchFilters.add(true);
 
     //  動画リストをリロードする。
-    final request = VideoListReloadRequest();
+    final request = VideoListReloadRequest(null);
     final response = await this._videoListReloadUseCase.execute(request);
     this._onFetchSuccess(response.videoList, response.hasNextPage);
 
