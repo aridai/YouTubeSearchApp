@@ -16,6 +16,7 @@ abstract class YouTubeApiService {
     @Query('pageToken') String pageToken = null,
     @Query('q') String query,
     @Query('regionCode') String regionCode = 'JP',
+    @Query('relevanceLanguage') String relevanceLanguage = 'ja',
     @Query('safeSearch') String safeSearch = 'none',
     @Query('type') String type = 'video',
     @Query('key') String key,
