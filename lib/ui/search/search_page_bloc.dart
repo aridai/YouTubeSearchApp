@@ -187,6 +187,12 @@ class SearchPageBloc {
     //  視聴履歴を保存する。
     await this._watchHistorySaveUseCase.execute(WatchHistorySaveRequest(video));
 
+    //  動画リストをリロードする。
+    final request = VideoListReloadRequest(this._options);
+    final response = await this._videoListReloadUseCase.execute(request);
+    this._onFetchSuccess(response.videoList, response.hasNextPage);
+
+    //  処理が終わり次第、動画を開かせる。
     this._videoOpenEventSubject.add(video.videoId);
 
     this._isSavingWatchHistory.add(false);
