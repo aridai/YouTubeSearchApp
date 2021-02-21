@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youtube_search_app/application/block/block_list_repository.dart';
 import 'package:youtube_search_app/application/history/watch/current_date_time_provider.dart';
 import 'package:youtube_search_app/application/history/watch/save/watch_history_save_interactor.dart';
@@ -9,16 +10,18 @@ import 'package:youtube_search_app/application/search/append/video_list_append_i
 import 'package:youtube_search_app/application/search/append/video_list_append_use_case.dart';
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_interactor.dart';
 import 'package:youtube_search_app/application/search/fetch/video_list_fetch_use_case.dart';
+import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_interactor.dart';
 import 'package:youtube_search_app/application/search/filter/fetch/filtering_options_fetch_use_case.dart';
-import 'package:youtube_search_app/application/search/filter/fetch/stub_filtering_options_fetch_interactor.dart';
+import 'package:youtube_search_app/application/search/filter/filtering_options_repository.dart';
+import 'package:youtube_search_app/application/search/filter/save/filtering_options_save_interactor.dart';
 import 'package:youtube_search_app/application/search/filter/save/filtering_options_save_use_case.dart';
-import 'package:youtube_search_app/application/search/filter/save/stub_filtering_options_save_interactor.dart';
 import 'package:youtube_search_app/application/search/reload/video_list_reload_interactor.dart';
 import 'package:youtube_search_app/application/search/reload/video_list_reload_use_case.dart';
 import 'package:youtube_search_app/application/search/search_repository.dart';
 import 'package:youtube_search_app/data/api/youtube_api_service.dart';
 import 'package:youtube_search_app/data/block/block_list_repository_impl.dart';
 import 'package:youtube_search_app/data/history/watch/watch_history_repository_impl.dart';
+import 'package:youtube_search_app/data/search/filter/filtering_options_repository_impl.dart';
 import 'package:youtube_search_app/data/search/search_repository_impl.dart';
 import 'package:youtube_search_app/env/env.dart';
 import 'package:youtube_search_app/ui/filter/dialog/filter_dialog_bloc.dart';
@@ -27,11 +30,14 @@ import 'package:youtube_search_app/ui/search/search_page_bloc.dart';
 //  DIコンテナのラッパ
 class Dependency {
   //  依存関係の設定を行う。
-  static void setup() {
+  static Future<void> setup() async {
+    final sharedPreferences = await SharedPreferences.getInstance();
+
     GetIt.I.registerSingleton(
       Env.youtubeApiKey,
       instanceName: 'YOUTUBE_API_KEY',
     );
+    GetIt.I.registerSingleton<SharedPreferences>(sharedPreferences);
 
     GetIt.I.registerLazySingleton<CurrentDateTimeProvider>(
       () => CurrentDateTimeProvider(),
@@ -49,6 +55,9 @@ class Dependency {
     GetIt.I.registerLazySingleton<BlockListRepository>(
       () => BlockListRepositoryImpl(),
     );
+    GetIt.I.registerLazySingleton<FilteringOptionsRepository>(
+      () => FilteringOptionsRepositoryImpl(resolve()),
+    );
 
     GetIt.I.registerFactory<VideoListFetchUseCase>(
       () => VideoListFetchInteractor(resolve(), resolve(), resolve()),
@@ -63,10 +72,10 @@ class Dependency {
       () => WatchHistorySaveInteractor(resolve(), resolve()),
     );
     GetIt.I.registerFactory<FilteringOptionsFetchUseCase>(
-      () => StubFilteringOptionsFetchInteractor(),
+      () => FilteringOptionsFetchInteractor(resolve()),
     );
     GetIt.I.registerFactory<FilteringOptionsSaveUseCase>(
-      () => StubFilteringOptionsSaveInteractor(),
+      () => FilteringOptionsSaveInteractor(resolve()),
     );
 
     GetIt.I.registerFactory<SearchPageBloc>(

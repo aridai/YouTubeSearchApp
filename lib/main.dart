@@ -3,10 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:youtube_search_app/dependency.dart';
 import 'package:youtube_search_app/my_app.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  Dependency.setup();
+  await Dependency.setup();
   runApp(MyApp());
 }
