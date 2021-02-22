@@ -23,6 +23,8 @@ class VideoListReloadInteractor implements VideoListReloadUseCase {
   Future<VideoListReloadResponse> execute(
       VideoListReloadRequest request) async {
     final result = this._searchRepository.getSearchResult();
+    if (result == null) return VideoListReloadResponse(List.empty(), false);
+
     final videoList =
         await this._convert(result.videos, request.options).toList();
 
